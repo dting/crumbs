@@ -4,6 +4,7 @@
   "description": "Google Maps Crumbs",
   "main": "index.js",
   "scripts": {
+    "heroku": "concurrently  \"mongod\" \"node ./server/server.js\"",
     "server": "nodemon ./server/server.js",
     "client": "cd client && webpack --watch",
     "sample": "nodemon ./mockUsers/server.js",
