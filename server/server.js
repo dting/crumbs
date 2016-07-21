@@ -47,6 +47,6 @@ io.on('connection', function (socket) {
 // 
 var port = process.env.PORT || 3000;
 server.listen(port, function(err) {
-  err ? console.log('server error', err) : console.log('server running port 3000') //console.log(path.join(__dirname, '../client'));
+  err ? console.log('server error', err) : console.log('server running port' + port) //console.log(path.join(__dirname, '../client'));
 })
 

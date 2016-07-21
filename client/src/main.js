@@ -5,6 +5,7 @@ import App from './components/App';
 import io from 'socket.io-client'
 
 var port = process.env.PORT || 3000;
+console.log('process.env.PORT ' , process.env.PORT);
 let demoSocket = io('http://localhost:8000')
 let mainSocket = io('http://localhost:' + port)
 

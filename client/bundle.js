@@ -65,6 +65,7 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var port = process.env.PORT || 3000;
+	console.log('process.env.PORT ', process.env.PORT);
 	var demoSocket = (0, _socket2.default)('http://localhost:8000');
 	var mainSocket = (0, _socket2.default)('http://localhost:' + port);
 
