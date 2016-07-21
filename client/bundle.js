@@ -65,7 +65,7 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var port = process.env.PORT || 3000;
-	// let demoSocket = io('http://localhost:8000')
+	var demoSocket = (0, _socket2.default)('http://localhost:8000');
 	var mainSocket = (0, _socket2.default)('http://localhost:' + port);
 
 	_reactDom2.default.render(_react2.default.createElement(_App2.default, { mainSocket: mainSocket, demoSocket: demoSocket }), document.getElementById('app'));
