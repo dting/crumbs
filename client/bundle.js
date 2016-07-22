@@ -64,10 +64,9 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var demoSocket = (0, _socket2.default)('http://localhost:8000');
-	var mainSocket = (0, _socket2.default)('http://localhost:3000');
+	var mainSocket = (0, _socket2.default)();
 
-	_reactDom2.default.render(_react2.default.createElement(_App2.default, { mainSocket: mainSocket, demoSocket: demoSocket }), document.getElementById('app'));
+	_reactDom2.default.render(_react2.default.createElement(_App2.default, { mainSocket: mainSocket }), document.getElementById('app'));
 
 /***/ },
 /* 1 */
@@ -21148,7 +21147,7 @@
 			_this.state = {
 				messages: null,
 				location: "37.7837-122.4090",
-				demoMode: true,
+				demoMode: false,
 				userLoggedIn: false
 			};
 			return _this;
@@ -21163,21 +21162,13 @@
 				var locationSource = !!this.state.demoMode ? this.updateLocationStateDemo.bind(this) : this.updateLocationState.bind(this);
 				setInterval(locationSource, 500);
 
-				//listens for a location update from the demo server
-				this.props.demoSocket.on('updateLocationStateDemo', function (data) {
-					var position = {};
-					position.coords = {};
-					position.coords.latitude = data.lat;
-					position.coords.longitude = data.lon;
-					_this2.setPosition(position);
-				});
-
 				//listens for a messages update from the main server
 				this.props.mainSocket.on('updateMessagesState', function (location) {
 					var messages = location ? location.messages : null;
 					_this2.setState({
 						messages: messages
 					});
+					console.log('New messages', _this2.state.messages);
 				});
 
 				this.props.mainSocket.on('Authentication', function (user) {
@@ -21204,21 +21195,15 @@
 		}, {
 			key: 'setPosition',
 			value: function setPosition(position) {
+
 				var latRound = position.coords.latitude.toFixed(3);
 				var lonRound = position.coords.longitude.toFixed(3);
 				var location = latRound.toString() + lonRound.toString();
 				this.setState({
 					location: location
 				});
+				console.log('New location', this.state.location);
 				this.updateMessagesState();
-			}
-
-			//socket request to demo server to update the state of the location of the app
-
-		}, {
-			key: 'updateLocationStateDemo',
-			value: function updateLocationStateDemo() {
-				this.props.demoSocket.emit('updateLocationStateDemo', null);
 			}
 
 			//socket request to the main server to update messages state based on location state
