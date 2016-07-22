@@ -44,7 +44,6 @@ io.on('connection', function (socket) {
 });
 
 // App now listening on port 3000.
-// 
 var port = process.env.PORT || 3000;
 server.listen(port, function(err) {
   err ? console.log('server error', err) : console.log('server running port' + port) //console.log(path.join(__dirname, '../client'));

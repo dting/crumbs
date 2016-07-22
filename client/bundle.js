@@ -64,7 +64,6 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// let demoSocket = io('http://localhost:8000')
 	var mainSocket = (0, _socket2.default)();
 
 	_reactDom2.default.render(_react2.default.createElement(_App2.default, { mainSocket: mainSocket }), document.getElementById('app'));
@@ -21163,15 +21162,6 @@
 				var locationSource = !!this.state.demoMode ? this.updateLocationStateDemo.bind(this) : this.updateLocationState.bind(this);
 				setInterval(locationSource, 500);
 
-				// //listens for a location update from the demo server
-				// this.props.demoSocket.on('updateLocationStateDemo', (data) => {
-				// 	var position = {};
-				// 	position.coords = {};
-				// 	position.coords.latitude = data.lat;
-				// 	position.coords.longitude = data.lon;
-				// 	this.setPosition(position);
-				// })
-
 				//listens for a messages update from the main server
 				this.props.mainSocket.on('updateMessagesState', function (location) {
 					var messages = location ? location.messages : null;
@@ -21215,11 +21205,6 @@
 				console.log('New location', this.state.location);
 				this.updateMessagesState();
 			}
-
-			// //socket request to demo server to update the state of the location of the app
-			// updateLocationStateDemo() {
-			// 	this.props.demoSocket.emit('updateLocationStateDemo', null);
-			// }
 
 			//socket request to the main server to update messages state based on location state
 
