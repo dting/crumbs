@@ -40,7 +40,8 @@ export default class App extends React.Component {
 			var messages = location ? location.messages : null;
 			this.setState({
 				messages: messages
-			})	
+			})
+			console.log('New messages', this.state.location);
 		})
 
 		this.props.mainSocket.on('Authentication', (user) => {
@@ -61,12 +62,14 @@ export default class App extends React.Component {
 
 	//will continulally update our location state with our new position returned form navigator.geolocation and check if we are in chat room
 	setPosition(position) {
+
 		var latRound = position.coords.latitude.toFixed(3)
 		var lonRound = position.coords.longitude.toFixed(3)
 		var location = latRound.toString() + lonRound.toString()
 		this.setState({
 			location: location,
 		})
+		console.log('New location', this.state.location);
 		this.updateMessagesState()
 	}
 

@@ -21178,6 +21178,7 @@
 					_this2.setState({
 						messages: messages
 					});
+					console.log('New messages', _this2.state.location);
 				});
 
 				this.props.mainSocket.on('Authentication', function (user) {
@@ -21204,12 +21205,14 @@
 		}, {
 			key: 'setPosition',
 			value: function setPosition(position) {
+
 				var latRound = position.coords.latitude.toFixed(3);
 				var lonRound = position.coords.longitude.toFixed(3);
 				var location = latRound.toString() + lonRound.toString();
 				this.setState({
 					location: location
 				});
+				console.log('New location', this.state.location);
 				this.updateMessagesState();
 			}
 
