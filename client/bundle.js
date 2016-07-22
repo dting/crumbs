@@ -21178,7 +21178,7 @@
 					_this2.setState({
 						messages: messages
 					});
-					console.log('New messages', _this2.state.location);
+					console.log('New messages', _this2.state.messages);
 				});
 
 				this.props.mainSocket.on('Authentication', function (user) {

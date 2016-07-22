@@ -41,7 +41,7 @@ export default class App extends React.Component {
 			this.setState({
 				messages: messages
 			})
-			console.log('New messages', this.state.location);
+			console.log('New messages', this.state.messages);
 		})
 
 		this.props.mainSocket.on('Authentication', (user) => {
