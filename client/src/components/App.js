@@ -26,14 +26,14 @@ export default class App extends React.Component {
 			: this.updateLocationState.bind(this);
 		setInterval(locationSource, 500)
 
-		//listens for a location update from the demo server
-		this.props.demoSocket.on('updateLocationStateDemo', (data) => {
-			var position = {};
-			position.coords = {};
-			position.coords.latitude = data.lat;
-			position.coords.longitude = data.lon;
-			this.setPosition(position);
-		})
+		// //listens for a location update from the demo server
+		// this.props.demoSocket.on('updateLocationStateDemo', (data) => {
+		// 	var position = {};
+		// 	position.coords = {};
+		// 	position.coords.latitude = data.lat;
+		// 	position.coords.longitude = data.lon;
+		// 	this.setPosition(position);
+		// })
 
 		//listens for a messages update from the main server
 		this.props.mainSocket.on('updateMessagesState', (location) => {
@@ -70,10 +70,10 @@ export default class App extends React.Component {
 		this.updateMessagesState()
 	}
 
-	//socket request to demo server to update the state of the location of the app
-	updateLocationStateDemo() {
-		this.props.demoSocket.emit('updateLocationStateDemo', null);
-	}
+	// //socket request to demo server to update the state of the location of the app
+	// updateLocationStateDemo() {
+	// 	this.props.demoSocket.emit('updateLocationStateDemo', null);
+	// }
 
 	//socket request to the main server to update messages state based on location state
 	updateMessagesState() {
