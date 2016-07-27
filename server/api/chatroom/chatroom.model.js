@@ -1,8 +1,14 @@
 const mongoose = require('mongoose');
 
-const chatroomSchema = mongoose.Schema({
-  location: String,
-  messages: [{message: String, username: String, createdAt: {type: Date, default: Date.now}}],
+const messageSchema = mongoose.Schema({
+  message: String, username: String,
+}, {
+  timestamps: true,
 });
 
-module.exports = mongoose.model('Chatroom', chatroomSchema);
+const chatRoomSchema = mongoose.Schema({
+  location: String,
+  messages: [messageSchema],
+});
+
+module.exports = mongoose.model('ChatRoom', chatRoomSchema);

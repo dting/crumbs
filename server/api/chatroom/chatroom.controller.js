@@ -1,36 +1,46 @@
-const Chatroom = require('./chatroom.model');
+const ChatRoom = require('./chatroom.model');
 
 module.exports = {
-  // takes in array of lat and long and will query database to see if a token exists in that location
-  //if it exists will return an array of messages from db, if not, will return null
+  /**
+   * Finds chat room.
+   *
+   * @param location {number[]} lat, long
+   * @param socket
+   */
   updateMessagesState: (location, socket) => {
-    Chatroom.findOne({ location }, (err, tokenData) => {
-      socket.emit('updateMessagesState', tokenData);
-    });
+    ChatRoom.findOne({ location }).exec()
+      .then(room => socket.emit('updateMessagesState', room))
+      .catch(err => console.log('updateMessagesState error:', err));
   },
 
-  // takes in array of lat and long and will write a key (lat long array) value (empty array for messages) to db
+  /**
+   * Creates a chat room.
+   *
+   * @param location {number[]} lat, long
+   * @param socket
+   */
   createChatRoom: (location, socket) => {
-    Chatroom.create({
-      location,
-      messages: [],
-    }).then((data) => {
-      socket.emit('updateMessagesState', data);
-    }).catch((err) => {
-      console.log('createToken data failed to save to database', err);
-    });
+    ChatRoom.create({ location })
+      .then(room => socket.emit('updateMessagesState', room))
+      .catch(err => console.log('createChatRoom error:', err));
   },
 
+  /**
+   * Adds a message to a chat room.
+   *
+   * @param location {number[]} lat, long
+   * @param message {string} text of message
+   * @param username {string} name of message sender
+   * @param socket
+   */
   addMessageToChatRoom: ({ location, message, username }, socket) => {
-    Chatroom.findOne({ location }, (err, tokenData) => {
-      const tokenDataReturn = tokenData;
-      const newMessages = tokenData.messages;
-      newMessages.unshift({ message, username });
-      tokenDataReturn.messages = newMessages;
-      Chatroom.update({ location }, { messages: newMessages }, (err, dbResponse) => {
-        socket.emit('updateMessagesState', tokenDataReturn);
-      });
-    });
+    ChatRoom.findOne({ location }).exec()
+      .then(room => {
+        room.messages.push({ message, username });
+        return room.save();
+      })
+      .then(room => socket.emit('updateMessagesState', room))
+      .catch(err => console.log('addMessageToChatRoom error:', err));
   },
 };
 
