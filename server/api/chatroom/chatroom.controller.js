@@ -2,28 +2,20 @@ const ChatRoom = require('./chatroom.model');
 
 module.exports = {
   /**
-   * Finds chat room.
+   * Finds a chat room.
    *
    * @param location {number[]} lat, long
-   * @param socket
+   * @return {Promise} promise that resolves with found chat room
    */
-  updateMessagesState: (location, socket) => {
-    ChatRoom.findOne({ location }).exec()
-      .then(room => socket.emit('updateMessagesState', room))
-      .catch(err => console.log('updateMessagesState error:', err));
-  },
+  updateMessagesState: location => ChatRoom.findOne({ location }).exec(),
 
   /**
    * Creates a chat room.
    *
    * @param location {number[]} lat, long
-   * @param socket
+   * @return {Promise} promise that resolves with created chat room
    */
-  createChatRoom: (location, socket) => {
-    ChatRoom.create({ location })
-      .then(room => socket.emit('updateMessagesState', room))
-      .catch(err => console.log('createChatRoom error:', err));
-  },
+  createChatRoom: location => ChatRoom.create({ location }),
 
   /**
    * Adds a message to a chat room.
@@ -31,16 +23,14 @@ module.exports = {
    * @param location {number[]} lat, long
    * @param message {string} text of message
    * @param username {string} name of message sender
-   * @param socket
+   * @return {Promise} promise that resolves with updated chat room
    */
-  addMessageToChatRoom: ({ location, message, username }, socket) => {
-    ChatRoom.findOne({ location }).exec()
+  addMessageToChatRoom: ({ location, message, username }) => {
+    return ChatRoom.findOne({ location }).exec()
       .then(room => {
         room.messages.push({ message, username });
         return room.save();
-      })
-      .then(room => socket.emit('updateMessagesState', room))
-      .catch(err => console.log('addMessageToChatRoom error:', err));
+      });
   },
 };
 
