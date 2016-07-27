@@ -1,9 +1,7 @@
-const User = require('./userModel.js');
-const mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
+const User = require('./user.model');
 
 module.exports = {
-  validateUserLogin: (username, password, socket) => {
+  validateUserLogin: ({username, password}, socket) => {
     User.findOne({ username }, (err, userData) => {
       var user = false;
       if (userData) {
@@ -13,7 +11,7 @@ module.exports = {
     });
   },
 
-  validateUserSignup: (username, password, socket) => {
+  validateUserSignup: ({username, password}, socket) => {
     User.findOne({ username }, (err, userData) => {
       if (userData) {
         socket.emit('Authentication', false);

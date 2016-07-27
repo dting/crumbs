@@ -5,6 +5,4 @@ const chatroomSchema = mongoose.Schema({
   messages: [{message: String, username: String, createdAt: {type: Date, default: Date.now}}],
 });
 
-const Chatroom = mongoose.model('Chatroom', chatroomSchema);
-
-module.exports = Chatroom;
+module.exports = mongoose.model('Chatroom', chatroomSchema);
