@@ -1,30 +1,28 @@
 const User = require('./user.model');
 
 module.exports = {
-  validateUserLogin: ({username, password}, socket) => {
-    User.findOne({ username }, (err, userData) => {
-      var user = false;
-      if (userData) {
-        user = userData.password === password ? username : false;
-      }
-      socket.emit('Authentication', user);
-    });
+  /**
+   * Finds a user for provided username and checks if password matches
+   *
+   * @param username
+   * @param password
+   * @return {Promise.<boolean>} resolves with username if the password matches or false
+   */
+  login: ({username, password}) => {
+    return User.findOne({ username }).exec()
+      .then(userData => userData && userData.password === password ? username : false);
   },
 
-  validateUserSignup: ({username, password}, socket) => {
-    User.findOne({ username }, (err, userData) => {
-      if (userData) {
-        socket.emit('Authentication', false);
-      } else {
-        User.create({
-          username,
-          password,
-        }).then(() => {
-          socket.emit('Authentication', username);
-        }).catch((err) => {
-          console.log('Failed to create User Data', err);
-        });
-      }
-    });
+  /**
+   * Creates a user for provided username and saves password for user
+   *
+   * @param username
+   * @param password
+   * @return {Promise.<boolean|string>} resolves with created user's username or false
+   */
+  signUp: ({username, password}) => {
+    return User.findOne({ username }).exec()
+      .then(userData => !userData && User.create({ username, password }))
+      .then(createdUser => createdUser ? createdUser.username : false);
   },
 };
