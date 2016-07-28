@@ -9,7 +9,6 @@ export default class App extends React.Component {
     this.state = {
       messages: null,
       location: '37.7837-122.4090',
-      demoMode: true,
       userLoggedIn: false,
     };
   }
@@ -19,37 +18,23 @@ export default class App extends React.Component {
     this.createChatRoom = this.createChatRoom.bind(this);
     this.logOutUser = this.logOutUser.bind(this);
 
-    //selects and executes which source to use for setting the location state of application: demo or html5 nav
-    const locationSource = !!this.state.demoMode
-      ? this.updateLocationStateDemo.bind(this)
-      : this.updateLocationState.bind(this);
-    setInterval(locationSource, 500);
+    setInterval(this.updateLocationState.bind(this), 500);
 
-    //listens for a location update from the demo server
-    this.props.demoSocket.on('updateLocationStateDemo', (data) => {
-      const position = {};
-      position.coords = {};
-      position.coords.latitude = data.lat;
-      position.coords.longitude = data.lon;
-      this.setPosition(position);
-    });
-
-    //listens for a messages update from the main server
-    this.props.mainSocket.on('updateMessagesState', (location) => {
+    this.props.socket.on('updateMessagesState', (location) => {
       const messages = location ? location.messages : null;
       this.setState({
         messages,
       });
     });
 
-    this.props.mainSocket.on('Authentication', (user) => {
+    this.props.socket.on('Authentication', (user) => {
       this.setState({
         userLoggedIn: user,
       });
     });
   }
 
-  //will continulally update our location state with our new position returned form navigator.geolocation and check if we are in chat room
+  //will continually update our location state with our new position returned form navigator.geolocation and check if we are in chat room
   setPosition(position) {
     const latRound = position.coords.latitude.toFixed(3);
     const lonRound = position.coords.longitude.toFixed(3);
@@ -69,24 +54,19 @@ export default class App extends React.Component {
     }
   }
 
-  //socket request to demo server to update the state of the location of the app
-  updateLocationStateDemo() {
-    this.props.demoSocket.emit('updateLocationStateDemo', null);
-  }
-
-  //socket request to the main server to update messages state based on location state
+  //socket request to the server to update messages state based on location state
   updateMessagesState() {
-    this.props.mainSocket.emit('updateMessagesState', this.state.location);
+    this.props.socket.emit('updateMessagesState', this.state.location);
   }
 
-  //socket request to the main server to create a new chatroom
+  //socket request to the server to create a new chat room
   createChatRoom() {
-    this.props.mainSocket.emit('createChatRoom', this.state.location);
+    this.props.socket.emit('createChatRoom', this.state.location);
   }
 
-  //socket request to chatroom to append a new message to
+  //socket request to chat room to append a new message to
   addMessageToChatRoom(message) {
-    this.props.mainSocket.emit('addMessageToChatRoom', { location: this.state.location, message, username: this.state.userLoggedIn });
+    this.props.socket.emit('addMessageToChatRoom', { location: this.state.location, message, username: this.state.userLoggedIn });
   }
 
   logOutUser() {
@@ -107,9 +87,7 @@ export default class App extends React.Component {
     );
 
     const notLoggedIn = (
-      <Authentication
-        mainSocket={this.props.mainSocket}
-      />
+      <Authentication socket={this.props.socket} />
     );
 
     let childToRender = !!this.state.userLoggedIn ? loggedIn : notLoggedIn;
