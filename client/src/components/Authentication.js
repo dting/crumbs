@@ -43,11 +43,11 @@ export class Authentication extends React.Component {
   // Pass down clickhandler to Login
 
   validateUserLogin() {
-    this.props.mainSocket.emit('validateUserLogin', { username: this.state.usernameText, password: this.state.passwordText });
+    this.props.socket.emit('validateUserLogin', { username: this.state.usernameText, password: this.state.passwordText });
   }
 
   validateUserSignup() {
-    this.props.mainSocket.emit('validateUserSignup', { username: this.state.usernameText, password: this.state.passwordText });
+    this.props.socket.emit('validateUserSignup', { username: this.state.usernameText, password: this.state.passwordText });
   }
 
   render() {

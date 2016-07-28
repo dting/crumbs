@@ -26,6 +26,7 @@ module.exports = {
    * @return {Promise.<Object>} resolves with updated chat room
    */
   addMessageToChatRoom: ({ location, message, username }) => {
+    console.log(location);
     return ChatRoom.findOne({ location }).exec()
       .then(room => {
         room.messages.push({ message, username });
