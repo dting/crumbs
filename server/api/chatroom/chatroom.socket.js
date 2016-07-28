@@ -14,7 +14,6 @@ module.exports.register = socket => {
    * Creates a chat room and emits created chat room back to socket.
    */
   socket.on('createChatRoom', location => {
-    console.log(location);
     controller.createChatRoom(location)
       .then(createdChatRoom => socket.emit('updateMessagesState', createdChatRoom))
       .catch(err => console.log('createChatRoom error:', err));
