@@ -7,18 +7,19 @@
     "server": "nodemon ./server/server.js",
     "client": "cd client && webpack --watch",
     "dev": "concurrently --kill-others 'mongod' 'npm run server' 'npm run client'",
+    "lint": "./node_modules/eslint/bin/eslint.js .; exit 0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hewp/crumbs.git"
+    "url": "git+https://github.com/devhart/crumbs.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/hewp/crumbs/issues"
+    "url": "https://github.com/devhart/crumbs/issues"
   },
-  "homepage": "https://github.com/hewp/crumbs#readme",
+  "homepage": "https://github.com/devhart/crumbs#readme",
   "dependencies": {
     "bluebird": "^3.4.1",
     "body-parser": "^1.15.2",
