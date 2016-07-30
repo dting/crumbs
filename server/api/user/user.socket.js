@@ -8,7 +8,7 @@ module.exports.register = socket => {
    */
   socket.on('validateUserLogin', userCredentials => {
     controller.login(userCredentials)
-      .then(isAuth => isAuth && socket.emit('Authentication', userCredentials.username))
+      .then(isAuth => socket.emit('Authentication', isAuth ? userCredentials.username : false))
       .catch(err => console.log('validateUserLogin', err));
   });
 
@@ -18,9 +18,9 @@ module.exports.register = socket => {
    * Emits Authentication message with username if user is created successfully,
    * or false if user with username already exists.
    */
-  socket.on('validateUserSignup', userCredentials => {
+  socket.on('validateUserSignUp', userCredentials => {
     controller.signUp(userCredentials)
-      .then(created => created && socket.emit('Authentication', userCredentials.username))
+      .then(created => socket.emit('Authentication', created ? userCredentials.username : false))
       .catch(err => console.log('validateUserSignup', err));
   });
 };

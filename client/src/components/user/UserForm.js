@@ -1,17 +1,17 @@
 import React from 'react';
 
-export const UserEntry = (props) => (
+export default props => (
   <div>
     <form>
       <input
-        onChange={props.userChange}
-        value={props.usernameText}
+        onChange={props.handleUsernameTextChange}
+        value={props.username}
         type="text"
         placeholder="username"
       />
       <input
-        onChange={props.passwordChange}
-        value={props.passwordText}
+        onChange={props.handlePasswordTextChange}
+        value={props.password}
         type="password"
         placeholder="password"
       />
