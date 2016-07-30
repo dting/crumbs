@@ -18,7 +18,7 @@ export class AddMessage extends React.Component {
   }
 
   handleSubmit() {
-    this.props.addMessageToChatRoom(this.state.message);
+    this.props.addMessage(this.state.message);
     this.setState({ message: '' });
   }
 
