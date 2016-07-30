@@ -1,0 +1,9 @@
+.app {
+  margin: auto;
+  width: 80%;
+  height: 100%;
+  border: 1px solid black;
+  padding: 7%;
+  text-align: center;
+  background: #CCC;
+}

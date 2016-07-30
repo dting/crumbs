@@ -2,15 +2,7 @@ import React, { Component, cloneElement } from 'react';
 import { browserHistory } from 'react-router';
 import { Jumbotron, Button } from 'react-bootstrap';
 
-const appStyle = {
-  margin: 'auto auto',
-  width: '80%',
-  height: '100%',
-  border: '1px solid black',
-  padding: '7%',
-  textAlign: 'center',
-  background: '#CCC',
-};
+import s from './home.css';
 
 export default class extends Component {
   constructor(props) {
@@ -41,6 +33,12 @@ export default class extends Component {
       }
     });
 
+    this.props.route.socket.on('room:created', result => {
+      if (result.location === this.state.location) {
+        this.setState({ exists: result.room });
+      }
+    });
+
     this.props.route.socket.on('message:added', result => {
       if (result.location === this.state.location) {
         const messages = this.state.room.messages;
@@ -56,7 +54,6 @@ export default class extends Component {
       browserHistory.push('/roaming');
     }
 
-    this.checkRoom();
     // TODO: Handle navigator errors.
     navigator.geolocation.getCurrentPosition(this.setPosition);
     this.watchID = navigator.geolocation.watchPosition(this.setPosition);
@@ -103,7 +100,7 @@ export default class extends Component {
   render() {
     const childProps = Object.assign({}, this.handlers, this.state);
     return (
-      <div style={appStyle}>
+      <div className={s.app}>
         <Button style={{ float: 'right' }} bsStyle="link" onClick={this.logout}>
           Logout
         </Button>

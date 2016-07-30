@@ -1,13 +1,10 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 
-const style = {
-  margin: 'auto auto',
-  height: '100%',
-};
+import s from './roaming.css';
 
 export default props => (
-  <div style={style}>
+  <div className={s.roaming}>
     {!props.exists && (
       <div>
         <h2>You are not in a chat room!</h2>

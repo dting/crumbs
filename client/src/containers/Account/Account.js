@@ -3,15 +3,7 @@ import { browserHistory } from 'react-router';
 import { Jumbotron, Button } from 'react-bootstrap';
 import { UserForm } from '../../components/user';
 
-const authStyle = {
-  margin: 'auto auto',
-  width: '80%',
-  height: '100%',
-  border: '1px solid black',
-  padding: '7%',
-  textAlign: 'center',
-  background: '#CCC',
-};
+import s from './account.css';
 
 const jumboStyle = {
   border: '1px solid black',
@@ -81,10 +73,10 @@ export default class extends Component {
   render() {
     const childProps = Object.assign({ pending: this.state.pending }, this.handlers);
     return (
-      <div style={authStyle}>
+      <div className={s.auth}>
         <Jumbotron style={jumboStyle}>
-          <h1> Crumbs </h1>
-          <p> Authentication </p>
+          <h1>Crumbs</h1>
+          <p>Authentication</p>
         </Jumbotron>
         <UserForm {...childProps}/>
         {this.props.children && cloneElement(this.props.children, childProps)}
