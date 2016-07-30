@@ -1,32 +1,54 @@
 const controller = require('./chatroom.controller');
 
-module.exports.register = socket => {
+module.exports.register = (socket, io) => {
   /**
-   * Finds a chat room and emits found chat room back to socket.
+   * Joins a chat room and emits location and joined chat room back to socket.
    */
-  socket.on('updateMessagesState', location => {
-    controller.updateMessagesState(location)
-      .then(chatRoom => socket.emit('updateMessagesState', chatRoom))
-      .catch(err => console.log('updateMessageState error:', err));
+  socket.on('join:room', ({ location, username }) => {
+    if (location) {
+      Object.keys(socket.rooms)
+        .forEach(roomId => socket.leave(socket.rooms[roomId]));
+
+      socket.join(location);
+      io.to(location).emit('user:joined', username);
+      controller.getRoom(location)
+        .then(room => socket.emit('room:joined', { location, room }))
+        .catch(err => console.log('join:room error:', err));
+    }
   });
 
   /**
    * Creates a chat room and emits created chat room back to socket.
    */
-  socket.on('createChatRoom', location => {
-    controller.createChatRoom(location)
-      .then(createdChatRoom => socket.emit('updateMessagesState', createdChatRoom))
-      .catch(err => console.log('createChatRoom error:', err));
+  socket.on('create:room', location => {
+    if (location) {
+      controller.checkRoom(location)
+        .then(exists => {
+          if (exists) return { location, room: false };
+          return controller.createRoom(location);
+        })
+        .then(result => socket.emit('room:created', result))
+        .catch(err => console.log('create:room error:', err));
+    }
   });
 
   /**
-   * Add message to chat room and emits back updated chat room to socket.
-   *
-   * TODO: This should add message to room then emit the message to chat room users
+   * Checks if chat room exists and emits result it back to socket.
    */
-  socket.on('addMessageToChatRoom', msg => {
-    controller.addMessageToChatRoom(msg, socket)
-      .then(updatedChatRoom => socket.emit('updateMessagesState', updatedChatRoom))
-      .catch(err => console.log('addMessageToChatRoom error:', err));
+  socket.on('check:room', location => {
+    if (location) {
+      controller.checkRoom(location)
+        .then(exists => socket.emit('room:checked', { location, exists }))
+        .catch(err => console.log('check:room error:', err));
+    }
+  });
+
+  /**
+   * Add message to chat room and emits to the room the message that was added.
+   */
+  socket.on('add:message', msg => {
+    controller.addMessage(msg)
+      .then(result => io.to(msg.location).emit('message:added', result))
+      .catch(err => console.log('add:message error:', err));
   });
 };

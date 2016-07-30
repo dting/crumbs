@@ -6,10 +6,10 @@ module.exports.register = socket => {
    *
    * Emits Authentication message with username if the password matched or false.
    */
-  socket.on('validateUserLogin', userCredentials => {
+  socket.on('user:login', userCredentials => {
     controller.login(userCredentials)
       .then(isAuth => socket.emit('Authentication', isAuth ? userCredentials.username : false))
-      .catch(err => console.log('validateUserLogin', err));
+      .catch(err => console.log('user:login', err));
   });
 
   /**
@@ -18,9 +18,9 @@ module.exports.register = socket => {
    * Emits Authentication message with username if user is created successfully,
    * or false if user with username already exists.
    */
-  socket.on('validateUserSignUp', userCredentials => {
+  socket.on('user:signUp', userCredentials => {
     controller.signUp(userCredentials)
       .then(created => socket.emit('Authentication', created ? userCredentials.username : false))
-      .catch(err => console.log('validateUserSignup', err));
+      .catch(err => console.log('user:signUp', err));
   });
 };

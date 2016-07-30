@@ -26,7 +26,7 @@ export default class extends Component {
       password: '',
     };
 
-    this.childProps = {
+    this.handlers = {
       login: this.login.bind(this),
       signUp: this.signUp.bind(this),
       handleUsernameTextChange: this.handleUsernameTextChange.bind(this),
@@ -52,14 +52,22 @@ export default class extends Component {
     });
   }
 
+  componentWillMount() {
+    if (localStorage.getItem('username') !== null) {
+      browserHistory.push('/');
+    }
+  }
+
   login() {
+    this.setState({ pending: true });
     const { username, password } = this.state;
-    this.props.route.socket.emit('validateUserLogin', { username, password });
+    this.props.route.socket.emit('user:login', { username, password });
   }
 
   signUp() {
+    this.setState({ pending: true });
     const { username, password } = this.state;
-    this.props.route.socket.emit('validateUserSignUp', { username, password });
+    this.props.route.socket.emit('user:signUp', { username, password });
   }
 
   handleUsernameTextChange(e) {
@@ -71,14 +79,15 @@ export default class extends Component {
   }
 
   render() {
+    const childProps = Object.assign({ pending: this.state.pending }, this.handlers);
     return (
       <div style={authStyle}>
         <Jumbotron style={jumboStyle}>
           <h1> Crumbs </h1>
           <p> Authentication </p>
         </Jumbotron>
-        <UserForm {...this.childProps}/>
-        {this.props.children && cloneElement(this.props.children, this.childProps)}
+        <UserForm {...childProps}/>
+        {this.props.children && cloneElement(this.props.children, childProps)}
       </div>
     );
   }

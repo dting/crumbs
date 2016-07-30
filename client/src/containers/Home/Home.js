@@ -23,13 +23,30 @@ export default class extends Component {
 
     this.setPosition = this.setPosition.bind(this);
     this.handlers = {
-      addMessageToChatRoom: this.addMessageToChatRoom.bind(this),
-      createChatRoom: this.createChatRoom.bind(this),
-      joinChatRoom: this.joinChatRoom,
+      addMessage: this.addMessage.bind(this),
+      createRoom: this.createRoom.bind(this),
+      joinRoom: this.joinRoom.bind(this),
     };
 
-    this.props.route.socket.on('updateMessagesState', room => {
-      this.setState({ room });
+    this.props.route.socket.on('room:joined', result => {
+      if (result.location === this.state.location) {
+        this.setState({ room: result.room });
+        browserHistory.push('/chat-room');
+      }
+    });
+
+    this.props.route.socket.on('room:checked', result => {
+      if (result.location === this.state.location) {
+        this.setState({ exists: result.exists });
+      }
+    });
+
+    this.props.route.socket.on('message:added', result => {
+      if (result.location === this.state.location) {
+        const messages = this.state.room.messages;
+        messages.push(result.message);
+        this.setState({ messages });
+      }
     });
   }
 
@@ -39,6 +56,7 @@ export default class extends Component {
       browserHistory.push('/roaming');
     }
 
+    this.checkRoom();
     // TODO: Handle navigator errors.
     navigator.geolocation.getCurrentPosition(this.setPosition);
     this.watchID = navigator.geolocation.watchPosition(this.setPosition);
@@ -55,28 +73,26 @@ export default class extends Component {
     if (this.state.location !== location) {
       this.setState({ location });
       browserHistory.push('/roaming');
-      this.updateMessagesState();
+      this.checkRoom();
     }
   }
 
-  updateMessagesState() {
-    this.props.route.socket.emit('updateMessagesState', this.state.location);
+  addMessage(message) {
+    const { location, username } = this.state;
+    this.props.route.socket.emit('add:message', { location, message, username });
   }
 
-  addMessageToChatRoom(message) {
-    this.props.route.socket.emit('addMessageToChatRoom', {
-      location: this.state.location,
-      message,
-      username: this.state.username,
-    });
+  checkRoom() {
+    this.props.route.socket.emit('check:room', this.state.location);
   }
 
-  createChatRoom() {
-    this.props.route.socket.emit('createChatRoom', this.state.location);
+  createRoom() {
+    this.props.route.socket.emit('create:room', this.state.location);
   }
 
-  joinChatRoom() {
-    browserHistory.push('/chat-room');
+  joinRoom() {
+    const { location, username } = this.state;
+    this.props.route.socket.emit('join:room', { location, username });
   }
 
   logout() {

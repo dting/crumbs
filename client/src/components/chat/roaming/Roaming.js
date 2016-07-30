@@ -8,7 +8,7 @@ const style = {
 
 export default props => (
   <div style={style}>
-    {!props.room && (
+    {!props.exists && (
       <div>
         <h2>You are not in a chat room!</h2>
         <br />
@@ -17,18 +17,18 @@ export default props => (
           Leave a message for someone else to find later!
         </p>
         <br />
-        <Button bsStyle="primary" onClick={props.createChatRoom}>
+        <Button bsStyle="primary" onClick={props.createRoom}>
           Create a New Chat Room!
         </Button>
       </div>
     )}
-    {props.room && (
+    {props.exists && (
       <div>
         <h2>There is a chat room here!</h2>
         <br />
         <p>Add to the conversation!</p>
         <br />
-        <Button bsStyle="primary" onClick={props.joinChatRoom}>
+        <Button bsStyle="primary" onClick={props.joinRoom}>
           Join Room!
         </Button>
       </div>
