@@ -1,8 +1,13 @@
 const mongoose = require('mongoose');
+const logger = require('winston');
+
 mongoose.Promise = require('bluebird');
 
-module.exports.connect = () => {
+module.exports.connect = function connect() {
   return mongoose.connect('mongodb://localhost/crumbs')
-    .then(() => console.log('Connected to mongodb'))
-    .catch(err => console.log('Error connecting to mongodb:', db));
+    .then(() => logger.info('Connected to MongoDB'))
+    .catch(err => {
+      throw new Error(`MongoDB connection error - ${err}`);
+    });
 };
+
