@@ -1,7 +1,7 @@
 import React, { Component, cloneElement } from 'react';
 import { browserHistory } from 'react-router';
-import { Jumbotron, Button } from 'react-bootstrap';
-import { UserForm } from '../../components/user';
+import { Jumbotron } from 'react-bootstrap';
+import { UserForm } from '../../components/User';
 
 import s from './account.css';
 
@@ -78,7 +78,7 @@ export default class extends Component {
           <h1>Crumbs</h1>
           <p>Authentication</p>
         </Jumbotron>
-        <UserForm {...childProps}/>
+        <UserForm {...childProps} />
         {this.props.children && cloneElement(this.props.children, childProps)}
       </div>
     );
