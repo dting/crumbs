@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 
 import { Home, Account } from './containers';
 import { Roaming, Room } from './components/chat';
-import { Login, SignUp } from './components/user';
+import { Login, SignUp } from './components/User';
 
 const socketServerUri = process.env.SOCKET_SERVER_URI || 'http://localhost:3000';
 const socket = io(socketServerUri);

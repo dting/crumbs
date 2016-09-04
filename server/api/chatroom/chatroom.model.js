@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 
-const messageSchema = mongoose.Schema({
+const Schema = mongoose.Schema;
+
+const messageSchema = new Schema({
   message: String,
   username: String,
 }, {
   timestamps: true,
 });
 
-const chatRoomSchema = mongoose.Schema({
+const chatRoomSchema = new Schema({
   location: String,
   messages: [messageSchema],
 });

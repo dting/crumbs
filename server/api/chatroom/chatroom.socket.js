@@ -1,3 +1,4 @@
+const logger = require('winston');
 const controller = require('./chatroom.controller');
 
 module.exports.register = (socket, io) => {
@@ -15,7 +16,7 @@ module.exports.register = (socket, io) => {
       io.to(location).emit('user:joined', username);
       controller.getRoom(location)
         .then(room => socket.emit('room:joined', { location, room }))
-        .catch(err => console.log('join:room error:', err));
+        .catch(err => logger.error(`join:room error - ${err}`));
     }
   });
 
@@ -28,7 +29,7 @@ module.exports.register = (socket, io) => {
     if (location) {
       controller.checkRoom(location)
         .then(exists => socket.emit('room:checked', { location, exists }))
-        .catch(err => console.log('check:room error:', err));
+        .catch(err => logger.error(`check:room error - ${err}`));
     }
   });
 
@@ -42,7 +43,7 @@ module.exports.register = (socket, io) => {
       controller.createRoom(location)
         .then(room => ({ location, room: !!room }))
         .then(result => socket.emit('room:created', result))
-        .catch(err => console.log('create:room error:', err));
+        .catch(err => logger.error(`create:room error - ${err}`));
     }
   });
 
@@ -55,6 +56,6 @@ module.exports.register = (socket, io) => {
     controller.addMessage(msg)
       .then(created => ({ location: msg.location, message: created }))
       .then(result => io.to(msg.location).emit('message:added', result))
-      .catch(err => console.log('add:message error:', err));
+      .catch(err => logger.error(`add:message error - ${err}`));
   });
 };

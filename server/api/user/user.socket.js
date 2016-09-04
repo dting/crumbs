@@ -1,3 +1,4 @@
+const logger = require('winston');
 const controller = require('./user.controller');
 
 module.exports.register = socket => {
@@ -9,7 +10,7 @@ module.exports.register = socket => {
   socket.on('user:login', userCredentials => {
     controller.login(userCredentials)
       .then(isAuth => socket.emit('Authentication', isAuth ? userCredentials.username : false))
-      .catch(err => console.log('user:login', err));
+      .catch(err => logger.error(`user:login error - ${err}`));
   });
 
   /**
@@ -21,6 +22,6 @@ module.exports.register = socket => {
   socket.on('user:signUp', userCredentials => {
     controller.signUp(userCredentials)
       .then(created => socket.emit('Authentication', created ? userCredentials.username : false))
-      .catch(err => console.log('user:signUp', err));
+      .catch(err => logger.error(`user:signUp error - ${err}`));
   });
 };
