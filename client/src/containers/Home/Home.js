@@ -105,8 +105,8 @@ class Home extends Component {
   }
 
   addMessage(message) {
-    const { location, username } = this.state;
-    this.state.socket.emit('add:message', { location, message, username });
+    const { location } = this.state;
+    this.state.socket.emit('add:message', { location, message });
   }
 
   checkRoom() {
@@ -118,8 +118,8 @@ class Home extends Component {
   }
 
   joinRoom() {
-    const { location, username } = this.state;
-    this.state.socket.emit('join:room', { location, username });
+    const { location } = this.state;
+    this.state.socket.emit('join:room', { location });
   }
 
   logout() {
