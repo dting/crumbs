@@ -1,7 +1,7 @@
 import React, { Component, cloneElement } from 'react';
 import { browserHistory } from 'react-router';
 import { Jumbotron } from 'react-bootstrap';
-import { UserForm } from '../../components/User';
+import { UserForm } from '../../components/user';
 
 import s from './account.css';
 
