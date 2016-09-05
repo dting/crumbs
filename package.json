@@ -4,6 +4,7 @@
   "description": "Google Maps Crumbs",
   "main": "index.js",
   "scripts": {
+    "start": "node ./server/server.js",
     "server": "nodemon ./server/server.js --watch server",
     "client": "webpack --config client/webpack.config.js --colors --watch",
     "dev": "concurrently --kill-others 'mongod' 'npm run server' 'npm run client'",
@@ -23,12 +24,17 @@
   },
   "homepage": "https://github.com/devhart/crumbs#readme",
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
     "bluebird": "^3.4.1",
     "body-parser": "^1.15.2",
     "bootstrap": "^3.3.6",
+    "compression": "^1.6.2",
     "cors": "^2.7.1",
     "express": "^4.14.0",
+    "express-jwt": "^3.4.0",
     "jquery": "^3.1.0",
+    "jsonwebtoken": "^7.1.9",
+    "lodash": "^4.15.0",
     "moment": "^2.14.1",
     "mongoose": "^4.5.4",
     "morgan": "^1.7.0",
@@ -39,6 +45,9 @@
     "react-dom": "^15.2.1",
     "react-router": "^2.6.1",
     "socket.io": "^1.4.8",
+    "socket.io-client": "^1.4.8",
+    "socketio-jwt": "^4.5.0",
+    "whatwg-fetch": "^1.0.0",
     "winston": "^2.2.0"
   },
   "devDependencies": {

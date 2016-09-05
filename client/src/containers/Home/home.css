@@ -7,3 +7,16 @@
   text-align: center;
   background: #CCC;
 }
+
+.userName {
+  padding: 8px;
+  float: left;
+}
+
+.logout {
+  float: right;
+}
+
+.jumbo {
+  border: 1px solid black;
+}
