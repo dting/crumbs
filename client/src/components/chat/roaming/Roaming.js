@@ -1,10 +1,24 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-
+import GoogleMap from 'google-map-react';
+import avatar from '../../../assets/profileIcon.png';
 import s from './roaming.css';
+
+const Marker = () => (
+  <div className={s.marker}>
+    <img className={s.markerAvatar} src={avatar} alt="avatar" />
+  </div>
+);
 
 export default props => (
   <div className={s.roaming}>
+    {props.position && (
+      <div className={s.map}>
+        <GoogleMap center={props.position} zoom={17}>
+          <Marker {...props.position} />
+        </GoogleMap>
+      </div>
+    )}
     {!props.exists && (
       <div>
         <h2>You are not in a chat room!</h2>
@@ -30,7 +44,5 @@ export default props => (
         </Button>
       </div>
     )}
-    <br />
-    <br />
   </div>
 );

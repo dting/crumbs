@@ -77,14 +77,14 @@ class Home extends Component {
       .then(res => res.json())
       .then(res => {
         this.setState({ user: res });
-        // TODO: Handle navigator errors.
-        navigator.geolocation.getCurrentPosition(this.setPosition);
-        this.watchID = navigator.geolocation.watchPosition(this.setPosition);
       })
       .catch(() => {
         localStorage.removeItem('token');
         this.props.router.push('/users');
       });
+    // TODO: Handle navigator errors.
+    navigator.geolocation.getCurrentPosition(this.setPosition);
+    this.watchID = navigator.geolocation.watchPosition(this.setPosition);
   }
 
   componentWillUnmount() {
@@ -93,14 +93,17 @@ class Home extends Component {
     }
   }
 
-  setPosition(position) {
-    const latRound = position.coords.latitude.toFixed(3);
-    const lonRound = position.coords.longitude.toFixed(3);
+  setPosition({ coords }) {
+    const latRound = coords.latitude.toFixed(3);
+    const lonRound = coords.longitude.toFixed(3);
     const location = latRound.toString() + lonRound.toString();
+    const position = { lat: coords.latitude, lng: coords.longitude };
     if (this.state.location !== location) {
-      this.setState({ location });
+      this.setState({ location, position });
       this.props.router.push('/roaming');
       this.checkRoom();
+    } else {
+      this.setState({ position });
     }
   }
 

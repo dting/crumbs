@@ -1,6 +1,7 @@
 import React from 'react';
 import Moment from 'moment';
 import { ListGroupItem } from 'react-bootstrap';
+import avatar from '../../../assets/profileIcon.png';
 import s from './room.css';
 
 export const MessageListEntry = props => {
@@ -8,10 +9,7 @@ export const MessageListEntry = props => {
   return (
     <ListGroupItem>
       <div className={s.messageContainer}>
-        <img src={require('../../../assets/profileIcon.png')}
-             alt="profile"
-             className={s.avatar}
-        />
+        <img src={avatar} alt="avatar" className={s.avatar} />
         <div className={s.messageContents}>
           <div className={s.titleLabel}>{message}</div>
           <div className={s.memberLabel}>{username}</div>
