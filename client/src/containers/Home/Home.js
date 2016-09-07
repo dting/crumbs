@@ -1,66 +1,96 @@
 import React, { Component, cloneElement } from 'react';
-import { browserHistory } from 'react-router';
+import { withRouter } from 'react-router';
 import { Jumbotron, Button } from 'react-bootstrap';
+import io from 'socket.io-client';
+import 'whatwg-fetch';
 
 import s from './home.css';
 
-export default class extends Component {
+class Home extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      room: null,
-      location: null,
-    };
+    const socket = io('', {
+      query: `token=${localStorage.getItem('token')}`,
+      transports: ['websocket'],
+    });
 
-    this.setPosition = this.setPosition.bind(this);
-    this.handlers = {
-      addMessage: this.addMessage.bind(this),
-      createRoom: this.createRoom.bind(this),
-      joinRoom: this.joinRoom.bind(this),
-    };
-
-    this.props.route.socket.on('room:joined', result => {
-      if (result.location === this.state.location) {
-        this.setState({ room: result.room });
-        browserHistory.push('/chat-room');
+    socket.on('unauthorized', err => {
+      if (err.data.type === 'UnauthorizedError' || err.data.code === 'invalid_token') {
+        localStorage.removeItem('token');
+        this.props.router.push('/users');
       }
     });
 
-    this.props.route.socket.on('room:checked', result => {
+    socket.on('room:joined', result => {
+      if (result.location === this.state.location) {
+        this.setState({ room: result.room });
+        this.props.router.push('/chat-room');
+      }
+    });
+
+    socket.on('room:checked', result => {
       if (result.location === this.state.location) {
         this.setState({ exists: result.exists });
       }
     });
 
-    this.props.route.socket.on('room:created', result => {
+    socket.on('room:created', result => {
       if (result.location === this.state.location) {
         this.setState({ exists: result.room });
       }
     });
 
-    this.props.route.socket.on('message:added', result => {
+    socket.on('message:added', result => {
       if (result.location === this.state.location) {
         const messages = this.state.room.messages;
         messages.push(result.message);
         this.setState({ messages });
       }
     });
+
+    this.state = {
+      room: null,
+      location: null,
+      socket,
+    };
+
+    this.setPosition = this.setPosition.bind(this);
+    this.logout = this.logout.bind(this);
+    this.handlers = {
+      addMessage: this.addMessage.bind(this),
+      createRoom: this.createRoom.bind(this),
+      joinRoom: this.joinRoom.bind(this),
+    };
   }
 
   componentWillMount() {
-    this.setState({ username: localStorage.getItem('username') });
-    if (!this.state.location) {
-      browserHistory.push('/roaming');
-    }
-
-    // TODO: Handle navigator errors.
-    navigator.geolocation.getCurrentPosition(this.setPosition);
-    this.watchID = navigator.geolocation.watchPosition(this.setPosition);
+    const promise = fetch('/api/users/me', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    promise
+      .then(res => res.json())
+      .then(res => {
+        this.setState({ user: res });
+        // TODO: Handle navigator errors.
+        navigator.geolocation.getCurrentPosition(this.setPosition);
+        this.watchID = navigator.geolocation.watchPosition(this.setPosition);
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
+        this.props.router.push('/users');
+      });
   }
 
   componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.watchID);
+    if (this.watchID) {
+      navigator.geolocation.clearWatch(this.watchID);
+    }
   }
 
   setPosition(position) {
@@ -69,43 +99,44 @@ export default class extends Component {
     const location = latRound.toString() + lonRound.toString();
     if (this.state.location !== location) {
       this.setState({ location });
-      browserHistory.push('/roaming');
+      this.props.router.push('/roaming');
       this.checkRoom();
     }
   }
 
   addMessage(message) {
-    const { location, username } = this.state;
-    this.props.route.socket.emit('add:message', { location, message, username });
+    const { location } = this.state;
+    this.state.socket.emit('add:message', { location, message });
   }
 
   checkRoom() {
-    this.props.route.socket.emit('check:room', this.state.location);
+    this.state.socket.emit('check:room', this.state.location);
   }
 
   createRoom() {
-    this.props.route.socket.emit('create:room', this.state.location);
+    this.state.socket.emit('create:room', this.state.location);
   }
 
   joinRoom() {
-    const { location, username } = this.state;
-    this.props.route.socket.emit('join:room', { location, username });
+    const { location } = this.state;
+    this.state.socket.emit('join:room', { location });
   }
 
   logout() {
-    localStorage.removeItem('username');
-    browserHistory.push('/users');
+    localStorage.removeItem('token');
+    this.props.router.push('/users');
   }
 
   render() {
     const childProps = Object.assign({}, this.handlers, this.state);
     return (
       <div className={s.app}>
-        <Button style={{ float: 'right' }} bsStyle="link" onClick={this.logout}>
+        {this.state.user && <span className={s.userName}>{this.state.user.username}</span>}
+        <Button className={s.logout} bsStyle="link" onClick={this.logout}>
           Logout
         </Button>
         <div>
-          <Jumbotron>
+          <Jumbotron className={s.jumbo}>
             <h1>Crumbs</h1>
             <p>Chat Room: {this.state.location}</p>
           </Jumbotron>
@@ -115,3 +146,5 @@ export default class extends Component {
     );
   }
 }
+
+export default withRouter(Home);

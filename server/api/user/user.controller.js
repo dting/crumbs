@@ -1,25 +1,34 @@
+const u = require('../../utils');
+const { signToken } = require('../../auth/auth.service');
 const User = require('./user.model');
 
 module.exports = {
-  /**
-   * Finds a user for provided username and checks if password matches
-   *
-   * @param username
-   * @param password
-   * @return {Promise.<boolean>} resolves with if the password matches
-   */
-  login: ({ username, password }) => User.findOne({ username }).exec()
-    .then(userData => userData && userData.password === password),
-
   /**
    * Creates a user for provided username and saves password for user
    *
    * If user with username exists, resolves promise with false.
    *
-   * @param username
-   * @param password
-   * @return {Promise.<boolean>} resolves with if the user was created
+   * @param req
+   * @param res
    */
-  signUp: ({ username, password }) => User.findOne({ username }).exec()
-    .then(foundUser => !foundUser && User.create({ username, password })),
+  signUp: function create(req, res) {
+    const { username, password } = req.body;
+    User.create({ username, password })
+      .then(user => signToken(user._id))
+      .then(token => ({ token }))
+      .then(u.respondWithResult(res))
+      .catch(u.validationError(res, 422));
+  },
+
+  /**
+   * Finds the req.user and returns the user without the password field
+   *
+   * @param req
+   * @param res
+   */
+  me: function me(req, res) {
+    User.findById(req.user._id, '-password')
+      .then(u.respondWithResult(res))
+      .catch(u.handleError(res));
+  },
 };

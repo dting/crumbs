@@ -7,13 +7,16 @@ module.exports.register = (socket, io) => {
    *
    * Emits an object with location <string> and room <ChatRoom>
    */
-  socket.on('join:room', ({ location, username }) => {
-    if (location) {
-      Object.keys(socket.rooms)
-        .forEach(roomId => socket.leave(socket.rooms[roomId]));
-
+  socket.on('join:room', ({ location }) => {
+    const rooms = Object.keys(socket.rooms);
+    if (rooms.indexOf(location) === -1) {
+      rooms.forEach(room => {
+        if (room !== socket.id) {
+          socket.leave(room);
+        }
+      });
       socket.join(location);
-      io.to(location).emit('user:joined', username);
+      io.to(location).emit('user:joined', socket.user.username);
       controller.getRoom(location)
         .then(room => socket.emit('room:joined', { location, room }))
         .catch(err => logger.error(`join:room error - ${err}`));
@@ -53,7 +56,9 @@ module.exports.register = (socket, io) => {
    * Emits an object with location <string> and message <ChatRoom.Message>
    */
   socket.on('add:message', msg => {
-    controller.addMessage(msg)
+    const { location, message } = msg;
+    const username = socket.user.username;
+    controller.addMessage({ location, message, username })
       .then(created => ({ location: msg.location, message: created }))
       .then(result => io.to(msg.location).emit('message:added', result))
       .catch(err => logger.error(`add:message error - ${err}`));

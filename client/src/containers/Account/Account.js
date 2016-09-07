@@ -1,15 +1,13 @@
 import React, { Component, cloneElement } from 'react';
-import { browserHistory } from 'react-router';
+import { withRouter } from 'react-router';
 import { Jumbotron } from 'react-bootstrap';
+import 'whatwg-fetch';
 import { UserForm } from '../../components/user';
+import { statusCheck } from '../../utils';
 
 import s from './account.css';
 
-const jumboStyle = {
-  border: '1px solid black',
-};
-
-export default class extends Component {
+class Account extends Component {
   constructor(props) {
     super(props);
 
@@ -24,42 +22,60 @@ export default class extends Component {
       handleUsernameTextChange: this.handleUsernameTextChange.bind(this),
       handlePasswordTextChange: this.handlePasswordTextChange.bind(this),
     };
-
-    /**
-     * Socket listener to save username and redirect to home page
-     *
-     * TODO: Add specific message handlers for different fail cases.
-     *
-     * @param authUser {boolean|string} username if auth successful or false
-     */
-    this.props.route.socket.on('Authentication', authUser => {
-      if (authUser) {
-        // TODO: If real auth is implemented we would want to store a jwt token.
-        localStorage.setItem('username', authUser);
-        browserHistory.push('/');
-      } else {
-        localStorage.removeItem('username');
-        browserHistory.push('/users');
-      }
-    });
   }
 
   componentWillMount() {
-    if (localStorage.getItem('username') !== null) {
-      browserHistory.push('/');
+    if (localStorage.getItem('token') !== null) {
+      this.props.router.push('/');
     }
   }
 
   login() {
     this.setState({ pending: true });
     const { username, password } = this.state;
-    this.props.route.socket.emit('user:login', { username, password });
+    const promise = fetch('/auth/local', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+    promise
+      .then(statusCheck)
+      .then(res => res.json())
+      .then(res => {
+        if (!res.token) {
+          throw new Error('Missing token.');
+        }
+        localStorage.setItem('token', res.token);
+        this.props.router.push('/');
+      })
+      .catch(() => this.setState({ pending: false, message: 'Login error. Try again!' }));
   }
 
   signUp() {
     this.setState({ pending: true });
     const { username, password } = this.state;
-    this.props.route.socket.emit('user:signUp', { username, password });
+    const promise = fetch('/api/users/sign-up', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+    promise
+      .then(statusCheck)
+      .then(res => res.json())
+      .then(res => {
+        if (!res.token) {
+          throw new Error('Missing token.');
+        }
+        localStorage.setItem('token', res.token);
+        this.props.router.push('/');
+      })
+      .catch(() => this.setState({ pending: false, message: 'Sign up error. Try again!' }));
   }
 
   handleUsernameTextChange(e) {
@@ -74,13 +90,16 @@ export default class extends Component {
     const childProps = Object.assign({ pending: this.state.pending }, this.handlers);
     return (
       <div className={s.auth}>
-        <Jumbotron style={jumboStyle}>
+        <Jumbotron className={s.jumbo}>
           <h1>Crumbs</h1>
           <p>Authentication</p>
         </Jumbotron>
         <UserForm {...childProps} />
+        {this.state.message && <div>{this.state.message}</div>}
         {this.props.children && cloneElement(this.props.children, childProps)}
       </div>
     );
   }
 }
+
+export default withRouter(Account);

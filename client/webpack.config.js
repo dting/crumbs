@@ -4,9 +4,10 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   context: path.resolve(__dirname, '../'),
-  entry: ['./client/src/main.js'],
+  entry: ['whatwg-fetch', './client/src/main.js'],
   output: {
     path: path.resolve(__dirname, '../public'),
+    publicPath: '/',
     filename: 'bundle.js',
   },
   plugins: [
