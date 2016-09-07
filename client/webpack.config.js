@@ -31,6 +31,9 @@ module.exports = {
         `css-loader?${JSON.stringify({ modules: true, minimize: true })}`,
         'postcss-loader',
       ],
+    }, {
+      test: /\.(png|jpg|jpeg|gif|woff)$/,
+      loader: 'url-loader?limit=8192'
     }],
   },
   postcss(bundler) {
