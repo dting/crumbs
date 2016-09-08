@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormGroup, ControlLabel, FormControl, Button } from 'react-bootstrap';
+import { FormGroup, InputGroup, FormControl, Button } from 'react-bootstrap';
 
 export class AddMessage extends React.Component {
   constructor(props) {
@@ -26,20 +26,19 @@ export class AddMessage extends React.Component {
     return (
       <form>
         <FormGroup controlId="formBasicText">
-          <ControlLabel>Add a message to the chatroom</ControlLabel>
-          <FormControl
-            type="text"
-            value={this.state.message}
-            placeholder="Enter text"
-            onChange={this.handleInputChange}
-          />
-          <br />
-          <Button
-            bsStyle="primary"
-            onClick={this.handleSubmit}
-          >
-            Add message
-          </Button>
+          <InputGroup>
+            <FormControl
+              type="text"
+              value={this.state.message}
+              placeholder="Enter text"
+              onChange={this.handleInputChange}
+            />
+            <InputGroup.Button>
+              <Button bsStyle="primary" onClick={this.handleSubmit}>
+                Add message
+              </Button>
+            </InputGroup.Button>
+          </InputGroup>
         </FormGroup>
       </form>
     );

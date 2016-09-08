@@ -1,22 +1,7 @@
-.app {
-  margin: auto;
-  width: 80%;
+.home {
+  width: 100%;
   height: 100%;
-  border: 1px solid black;
-  padding: 7%;
-  text-align: center;
-  background: #CCC;
-}
-
-.userName {
-  padding: 8px;
-  float: left;
-}
-
-.logout {
-  float: right;
-}
-
-.jumbo {
-  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }

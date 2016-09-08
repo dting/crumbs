@@ -1,11 +1,18 @@
 import React, { Component, cloneElement } from 'react';
 import { withRouter } from 'react-router';
-import { Jumbotron } from 'react-bootstrap';
+import { Grid } from 'react-bootstrap';
 import 'whatwg-fetch';
+import Navbar from '../../components/navbar/Navbar';
 import { UserForm } from '../../components/user';
 import { statusCheck } from '../../utils';
+import Map from '../../components/map/Map';
 
 import s from './account.css';
+
+const randomPosition = () => ({
+  lat: Math.floor(Math.random() * 180) - 90,
+  lng: Math.floor(Math.random() * 360) - 180,
+});
 
 class Account extends Component {
   constructor(props) {
@@ -27,7 +34,16 @@ class Account extends Component {
   componentWillMount() {
     if (localStorage.getItem('token') !== null) {
       this.props.router.push('/');
+    } else {
+      this.setState({ position: randomPosition() });
+      this.interval = setInterval(() => {
+        this.setState({ position: randomPosition() });
+      }, 10000);
     }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   login() {
@@ -87,16 +103,17 @@ class Account extends Component {
   }
 
   render() {
-    const childProps = Object.assign({ pending: this.state.pending }, this.handlers);
+    const childProps = Object.assign({ zoom: 1 }, this.state, this.handlers);
     return (
       <div className={s.auth}>
-        <Jumbotron className={s.jumbo}>
-          <h1>Crumbs</h1>
-          <p>Authentication</p>
-        </Jumbotron>
-        <UserForm {...childProps} />
-        {this.state.message && <div>{this.state.message}</div>}
-        {this.props.children && cloneElement(this.props.children, childProps)}
+        <Navbar />
+        <Map {...childProps} />
+        <Grid className={s.authForm}>
+          {this.state.message && <div>{this.state.message}</div>}
+          <UserForm {...childProps}>
+            {this.props.children && cloneElement(this.props.children, childProps)}
+          </UserForm>
+        </Grid>
       </div>
     );
   }

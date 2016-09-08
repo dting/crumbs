@@ -1,9 +1,8 @@
 import React, { Component, cloneElement } from 'react';
 import { withRouter } from 'react-router';
-import { Jumbotron, Button } from 'react-bootstrap';
 import io from 'socket.io-client';
 import 'whatwg-fetch';
-
+import Navbar from '../../components/navbar/Navbar';
 import s from './home.css';
 
 class Home extends Component {
@@ -61,6 +60,8 @@ class Home extends Component {
       addMessage: this.addMessage.bind(this),
       createRoom: this.createRoom.bind(this),
       joinRoom: this.joinRoom.bind(this),
+      leaveRoom: this.leaveRoom.bind(this),
+      logout: this.logout.bind(this),
     };
   }
 
@@ -121,8 +122,16 @@ class Home extends Component {
   }
 
   joinRoom() {
-    const { location } = this.state;
-    this.state.socket.emit('join:room', { location });
+    const { location, room } = this.state;
+    if (room && room.location === location) {
+      this.props.router.push('/chat-room');
+    } else {
+      this.state.socket.emit('join:room', { location });
+    }
+  }
+
+  leaveRoom() {
+    this.props.router.push('/roaming');
   }
 
   logout() {
@@ -131,18 +140,11 @@ class Home extends Component {
   }
 
   render() {
-    const childProps = Object.assign({}, this.handlers, this.state);
+    const childProps = Object.assign({}, this.handlers, this.state, this.state.position);
     return (
-      <div className={s.app}>
-        {this.state.user && <span className={s.userName}>{this.state.user.username}</span>}
-        <Button className={s.logout} bsStyle="link" onClick={this.logout}>
-          Logout
-        </Button>
+      <div className={s.home}>
+        <Navbar {...childProps} />
         <div>
-          <Jumbotron className={s.jumbo}>
-            <h1>Crumbs</h1>
-            <p>Chat Room: {this.state.location}</p>
-          </Jumbotron>
           {this.props.children && cloneElement(this.props.children, childProps)}
         </div>
       </div>
