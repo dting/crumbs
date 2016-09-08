@@ -1,6 +1,6 @@
 import React, { Component, cloneElement } from 'react';
 import { withRouter } from 'react-router';
-import { Grid } from 'react-bootstrap';
+import { Col, Grid } from 'react-bootstrap';
 import 'whatwg-fetch';
 import Navbar from '../../components/navbar/Navbar';
 import { UserForm } from '../../components/user';
@@ -109,7 +109,11 @@ class Account extends Component {
         <Navbar />
         <Map {...childProps} />
         <Grid className={s.authForm}>
-          {this.state.message && <div>{this.state.message}</div>}
+          {this.state.message && (
+            <Col smOffset={2} sm={10}>
+              <div className={s.authError}>{this.state.message}</div>
+            </Col>
+          )}
           <UserForm {...childProps}>
             {this.props.children && cloneElement(this.props.children, childProps)}
           </UserForm>

@@ -6,3 +6,9 @@
 .authForm {
   margin-top: 15px;
 }
+
+.authError {
+  text-align: center;
+  color: #f44336;
+  padding: 5px;
+}
